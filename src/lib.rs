@@ -13,19 +13,6 @@ use unity::prelude::*;
 // / This address has to be relative to the .text section of the game.
 // / If you do not know what any of this means, take the address in Ghidra and remove the starting ``71`` and the zeroes that follow it.
 // / Do not forget the 0x indicator, as it denotates that you are providing a hexadecimal value.
-#[skyline::hook(offset = 0x1A1C92C, inline)]
-pub fn lower_bound_max_hp(ctx: &mut InlineCtx) {
-    unsafe {
-        *ctx.registers[1].w.as_mut() = i8::MIN as u32;
-    }
-}
-#[skyline::hook(offset = 0x1A1C930, inline)]
-pub fn upper_bound_max_hp(ctx: &mut InlineCtx) {
-    unsafe {
-        *ctx.registers[2].w.as_mut() = i8::MAX as u32;
-    }
-}
-
 #[skyline::hook(offset = 0x1A1C944, inline)]
 pub fn commit_max_hp(ctx: &mut InlineCtx) {
     let this: &Unit = unsafe { &*(*ctx.registers[19].x.as_ref() as *const Unit) };
@@ -90,5 +77,5 @@ pub fn main() {
     // Do keep in mind that hooks cannot currently be uninstalled, so proceed accordingly.
     //
     // A ``install_hooks!`` variant exists to let you install multiple hooks at once if separated by a comma.
-    skyline::install_hooks!(lower_bound_max_hp, upper_bound_max_hp, commit_max_hp);
+    skyline::install_hook!(commit_max_hp);
 }
